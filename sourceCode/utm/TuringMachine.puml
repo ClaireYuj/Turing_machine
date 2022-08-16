@@ -1,0 +1,198 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface utm.Move{
+}
+
+
+
+
+class utm.TapePanel{
+-Tape tape
++TapePanel(tape:Tape)
++paintComponent(Graphic g):void
++setTape():void
+}
+
+class utm.Tape{
++Tape()
++Tape(input:String)
+}
+
+
+class utm.UniversalTuringMachine{
+-turingMachine:TuringMachine
+-mainContainer:JLayeredPane
+-tapePanel:TapePanel
+-headPanel:HeadPanel
+-haltLabel:JLabel
+-rulesScrollPane:JScrollPane
++UniversalTuringMachine()
++loadTuringMachine(turingMachine: TuringMachine):void
++loadInput(input:String):void
++display():void
++moveHead():void
++updateHeadState():void
++writeOnCurrentCell(symbol:char):void
++displayHaltState(halteState:HaltState):void
++getTuringMachine():TuringMachine
+
+}
+
+class utm.Head{
+-String:initialState
+-int: currentCell
+-String:currentState
++Head(initialState:String)
++moveRight():void
++moveLeft():void
++reset():void
++getCurrentCell():int
++getCurrentState():String
++setCurrentState(currentState:String):void
+}
+
+class utm.HeadPanel{
+-Head head;
+-Image headImage;
++HeadPanel(Head head)
++moveRight():void
++moveLeft():void
++paintComponent(Graphic g):void
++setHead(Head head):void
+}
+
+class utm.TuringMachine{
+-tape:Tape ;
+-head:Head ;
+-ruleCount:int ;
+-rules:String[][] ;
+-initialState:String ;
+-acceptState:String ;
+-rejectState:String ;
++TuringMachine(rulesNumber:int, initialState:String, acceptState String, rejectState String)
++addRule(currentState:String, currentSymbol: char, newState: String, newSymbol: char, move:Move):void
++getTape():Tape
++setTpe(tape:Tape):void
++getHead():Head
++getRules():String[][]
++getInitialState():String
++getAccepteState():String
++getRejectState():String
+}
+
+
+
+class utm.OriginalUTM{
+-UniversalTuringMachine:utm
+-isClassical:boolean
+-isLRTM:boolean
+-isBBTM:boolean
++OriginalUTM(utm: UniversalTuringMachine)
++displayWindow():void
++createTMFromFile(tmDescriptionFilePath: String):TuringMachine
++extractFile(tmDescriptionFilePath: String)): ArrayList<String>
++spiltRule(ruleset:String): ArrayList<String>
++extractDirection(move: String):Move
++executeTM(tm: TuringMachine):void
++getIsAnimation(isAnimation: String): boolean
++getISClassical():boolean
++getIsBBTM():boolean
++getIsLRTM(): boolean
+}
+
+class utm.ClaassicalTM {
+-utm:UniversalTuringMachine
+-isAnimation:boolean
++ClaassicalTM(utm:UniversalTuringMachine, isAnimation: boolean)
++extractDirection(String)
+}
+
+class utm.LRTM{
+-utm:UniversalTuringMachine
+-isAnimation:boolean
++LRTM(utm: UniversalTuringMachine, isAnimation:String)
++executeTM(tm: TuringMachine, input:String)
+
+}
+class utm.BBTM{
+-utm:UniversalTuringMachine
+-isAnimation:boolean
++BBTM(utm: UniversalTuringMachine, isAnimation:String)
++executeTM(tm: TuringMachine, input:String)
+}
+
+class utmeditor.UTMEditor{
+-window:JFrame
+-mainPanel:JPanel
+-loadButton:JButton
+-executionPanel:Panel
+-runButton:JButton;
+-input:JTextField
+-utmController:UTMController
+-isMachineLoaded:boolean
+-isMachineRunning:boolean
++UTMEditor()
++actionPerformed(e:ActionEvent):void
++loadTM():void
++runTM():void+setUTMController(utmController:UTMController):void
+}
+
+interface utmeditor.UTMController{
++loadTuringMachineFrom(filePath:String):void
++runTM(input:String):void
+}
+
+class utmeditor.GUIUTM{
+-utm:UniversalTuringMachine
+-extendUTM:OriginalUTM
+-tm:TuringMachine
++GUIUTM()
++loadTuringMachineFrom(filePath:String):void
++runTM(input:String):void
++main(args: String[]):void
+}
+
+enum utm.MoveClassical{
+RIGHT
+LEFT
+}
+
+enum utm.HaltState{
+ACCEPTED
+REJECTED
+}
+
+enum utm.MoveLRTM{
+RESET
+}
+
+
+utm.Tape --o utm.TapePanel
+utm.Head --o utm.HeadPanel
+
+utm.TuringMachine o-- utm.Tape
+utm.TuringMachine o-- utm.Head
+
+utm.UniversalTuringMachine o-- utm.TapePanel
+utm.UniversalTuringMachine o-- utm.HeadPanel
+
+utm.TuringMachine --o utm.UniversalTuringMachine
+utm.ClaassicalTM o-- utm.UniversalTuringMachine
+utm.LRTM o-- utm.UniversalTuringMachine
+utm.BBTM o-- utm.UniversalTuringMachine
+utm.OriginalUTM o-- utm.UniversalTuringMachine
+
+utm.OriginalUTM <-- utm.ClaassicalTM
+utm.OriginalUTM <-- utm.LRTM
+utm.OriginalUTM <-- utm.BBTM
+
+utmeditor.GUIUTM o-- utmeditor.UTMEditor
+utmeditor.GUIUTM <|.. utmeditor.UTMController
+utmeditor.GUIUTM o-- utm.TuringMachine
+utmeditor.GUIUTM o-- utm.UniversalTuringMachine
+
+utm.MoveClassica..|>utm.Move
+utm.MoveLRTM..|>utm.Move
+
+@enduml
